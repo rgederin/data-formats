@@ -278,7 +278,7 @@ StAX was designed as a median between these two opposites. In the StAX metaphor,
 
 Summing up, StAX can parse or create documents of arbitrary sizes, makes infoset items available to applications almost immediately, and uses the pull model to put the application in charge. Neither SAX nor DOM offers all of these advantages.
 
-![stax](https://github.com/rgederin/data-formats/blob/master/img/staxjpg)
+![stax](https://github.com/rgederin/data-formats/blob/master/img/stax.jpg)
 
 ![pull](https://github.com/rgederin/data-formats/blob/master/img/pull-push.jpg)
 

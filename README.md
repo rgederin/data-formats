@@ -232,6 +232,8 @@ SAX exists in two major versions. Java implements SAX 1 through the javax.xml.pa
 
 XMLReader makes available several methods for configuring the parser and parsing a document’s content. Some of these methods get and set the content handler, DTD handler, entity resolver, and error handler, which are described by the ContentHandler, DTDHandler, EntityResolver, and ErrorHandler interfaces. After learning about XMLReader’s methods and these interfaces, you learned about the nonstandard LexicalHandler interface and how to create a custom entity resolver.
 
+![sax](https://github.com/rgederin/data-formats/blob/master/img/sax.jpg)
+
 ## DOM
 
 **Document Object Model (DOM)** is an API for parsing an XML document into an in-memory tree of nodes, and for creating an XML document from a node tree. After a DOM parser creates a tree, an application uses the DOM API to navigate over and extract infoset items from the tree’s nodes.
@@ -246,6 +248,8 @@ However, SAX is advantageous over DOM in that it can parse documents of arbitrar
 DOM views an XML document as a tree that is composed of several kinds of nodes. This tree has a single root node and all nodes, except for the root, have a parent node. Also, each node has a list of child nodes. When this list is empty, the child node is known as a leaf node.
 
 DOM views an XML document as a tree that’s composed of several kinds of nodes: attribute, CDATA section, comment, document, document fragment, document type, element, entity, entity reference, notation, processing instruction, and text.
+
+![dom](https://github.com/rgederin/data-formats/blob/master/img/dom.jpg)
 
 ## StAX
 
@@ -273,6 +277,10 @@ StAX was designed as a median between these two opposites. In the StAX metaphor,
 * StAX (like DOM) adopts the pull model, in which the application tells the parser when it’s ready to receive the next infoset item. This model is based on the iterator design pattern, which results in an application that’s easier to write and debug. In contrast, SAX adopts the push model, in which the parser passes infoset items via events to the application, whether or not the application is ready to receive them. This model is based on the observer design pattern, which results in an application that’s often harder to write and debug.
 
 Summing up, StAX can parse or create documents of arbitrary sizes, makes infoset items available to applications almost immediately, and uses the pull model to put the application in charge. Neither SAX nor DOM offers all of these advantages.
+
+![stax](https://github.com/rgederin/data-formats/blob/master/img/staxjpg)
+
+![pull](https://github.com/rgederin/data-formats/blob/master/img/pull-push.jpg)
 
 ### Stream-Based vs. Event-Based Readers and Writers
 

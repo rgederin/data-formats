@@ -460,3 +460,56 @@ Select addresses of all English Wikimedia projects (text of all edition elements
 ```
 /Wikimedia/projects/project/editions/edition[@language='English']/text()
 ```
+
+## XQuery
+
+XQuery (XML Query) is a query and functional programming language that queries and transforms collections of structured and unstructured data, usually in the form of XML, text and with vendor-specific extensions for other data formats (JSON, binary, etc.). The language is developed by the XML Query working group of the W3C. The work is closely coordinated with the development of XSLT by the XSL Working Group; the two groups share responsibility for XPath, which is a subset of XQuery.
+
+* XQuery 1.0 became a W3C Recommendation on January 23, 2007.
+* XQuery 3.0 became a W3C Recommendation on April 8, 2014.
+* XQuery 3.1 became a W3C Recommendation on March 21, 2017.
+
+The mission of the XML Query project is to provide flexible query facilities to extract data from real and virtual documents on the World Wide Web, therefore finally providing the needed interaction between the Web world and the database world. Ultimately, collections of XML files will be accessed like databases
+
+XQuery provides the means to extract and manipulate data from XML documents or any data source that can be viewed as XML, such as relational databases[9] or office documents.
+
+XQuery contains a superset of XPath expression syntax to address specific parts of an XML document. It supplements this with a SQL-like "FLWOR expression" for performing joins. A FLWOR expression is constructed from the five clauses after which it is named: FOR, LET, WHERE, ORDER BY, RETURN.
+
+The language also provides syntax allowing new XML documents to be constructed. Where the element and attribute names are known in advance, an XML-like syntax can be used; in other cases, expressions referred to as dynamic node constructors are available. All these constructs are defined as expressions within the language, and can be arbitrarily nested.
+
+The language is based on the XQuery and XPath Data Model (XDM) which uses a tree-structured model of the information content of an XML document, containing seven kinds of nodes: document nodes, elements, attributes, text nodes, comments, processing instructions, and namespaces.
+
+XDM also models all values as sequences (a singleton value is considered to be a sequence of length one). The items in a sequence can either be XML nodes or atomic values. Atomic values may be integers, strings, booleans, and so on: the full list of types is based on the primitive types defined in XML Schema.
+
+**Applications**
+
+Below are a few examples of how XQuery can be used:
+
+* Extracting information from a database for use in a web service.
+* Generating summary reports on data stored in an XML database.
+* Searching textual documents on the Web for relevant information and compiling the results.
+* Selecting and transforming XML data to XHTML to be published on the Web.
+* Pulling data from databases to be used for the application integration.
+* Splitting up an XML document that represents multiple transactions into multiple XML documents.
+
+### XQuery and XSLT compared
+
+**Scope**
+
+Although XQuery was initially conceived as a query language for large collections of XML documents, it is also capable of transforming individual documents. As such, its capabilities overlap with XSLT, which was designed expressly to allow input XML documents to be transformed into HTML or other formats.
+
+The XSLT 2.0 and XQuery standards were developed by separate working groups within W3C, working together to ensure a common approach where appropriate. They share the same data model (XDM), type system, and function library, and both include XPath 2.0 as a sublanguage.
+
+**Origin**
+
+The two languages, however, are rooted in different traditions and serve the needs of different communities. XSLT was primarily conceived as a stylesheet language whose primary goal was to render XML for the human reader on screen, on the web (as web template language), or on paper. XQuery was primarily conceived as a database query language in the tradition of SQL.
+
+Because the two languages originate in different communities, XSLT is stronger in its handling of narrative documents with more flexible structure, while XQuery is stronger in its data handling (for example, when performing relational joins).
+
+### XQuery API for Java (XQJ) 
+
+XQuery API for Java (XQJ) refers to the common Java API for the W3C XQuery 1.0 specification.
+
+The XQJ API enables Java programmers to execute XQuery against an XML data source (e.g. an XML database) while reducing or eliminating vendor lock in.
+
+The XQJ API provides Java developers with an interface to the XQuery Data Model. Its design is similar to the JDBC API which has a client/server feel and as such lends itself well to Server-based XML Databases and less well to client-side XQuery processors, although the "connection" part is a very minor part of the entire API. Users of the XQJ API can bind Java values to XQuery expressions, preventing code injection attacks. Also, multiple XQuery expressions can be executed as part of an atomic transaction.

@@ -14,6 +14,7 @@
 - [JSON](#json)
     * [Syntax](#syntax)
     * [JSON Schema](#json-schema)
+    * [JSON vs XML](#json-vs-xml)
     
     
 # XML
@@ -658,6 +659,6 @@ JSON is Unlike XML Because
 * JSON is quicker to read and write
 * JSON can use arrays
 
-![jvsx](https://github.com/rgederin/data-formats/blob/master/img/jvsx.png)
+![jvsx](https://github.com/rgederin/data-formats/blob/master/img/jvsx.jpg)
 
 ![jvsx](https://github.com/rgederin/data-formats/blob/master/img/json.png)

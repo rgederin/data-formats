@@ -641,3 +641,23 @@ The JSON Schema above can be used to test the validity of the JSON code below:
 ![synt](https://github.com/rgederin/data-formats/blob/master/img/syntax.png)
 
 ![synt](https://github.com/rgederin/data-formats/blob/master/img/semantics.png)
+
+## JSON vs XML
+
+JSON is Like XML Because
+
+* Both JSON and XML are "self describing" (human readable)
+* Both JSON and XML are hierarchical (values within values)
+* Both JSON and XML can be parsed and used by lots of programming languages
+* Both JSON and XML can be fetched with an XMLHttpRequest
+
+JSON is Unlike XML Because
+
+* JSON doesn't use end tag
+* JSON is shorter
+* JSON is quicker to read and write
+* JSON can use arrays
+
+![jvsx](https://github.com/rgederin/data-formats/blob/master/img/jvsx.png)
+
+![jvsx](https://github.com/rgederin/data-formats/blob/master/img/json.png)

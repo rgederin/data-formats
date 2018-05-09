@@ -10,6 +10,7 @@
     * [StAX](#stax)
     * [XSLT](#xslt)
     * [XPath](#xpath)
+    * [XQuery](#xquery)
     
     
 # XML

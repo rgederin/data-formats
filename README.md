@@ -9,6 +9,7 @@
     * [DOM](#dom)
     * [StAX](#stax)
     * [XSLT](#xslt)
+    * [XPath](#xpath)
     
     
 # XML
@@ -406,3 +407,56 @@ with the XML input file shown above results in the following XHTML (whitespace h
 
 Java implements XSLT through the types in the javax.xml.transform, javax.xml.transform.dom, javax.xml.transform.sax, javax.xml.transform.stax, and javax.xml.transform.stream packages. The javax.xml.transform package defines the generic APIs for processing transformation instructions and for performing a transformation from a source (where the XSLT processor’s input originates) to a result (where the processor’s output is sent). The remaining packages define the APIs for obtaining different kinds of sources and results.
 
+## XPath
+
+XPath is a nonXML declarative query language (defined by the W3C) for selecting an XML document’s infoset items as one or more nodes. 
+
+The XPath language is based on a tree representation of the XML document, and provides the ability to navigate around the tree, selecting nodes by a variety of criteria
+
+As well as simplifying access to a DOM tree’s nodes, XPath is commonly used in the context of XSLT where it’s typically employed to select (via XPath expressions) those input document elements that are to be copied to an output document. 
+
+Given a sample XML document
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<Wikimedia>
+  <projects>
+    <project name="Wikipedia" launch="2001-01-05">
+      <editions>
+        <edition language="English">en.wikipedia.org</edition>
+        <edition language="German">de.wikipedia.org</edition>
+        <edition language="French">fr.wikipedia.org</edition>
+        <edition language="Polish">pl.wikipedia.org</edition>
+        <edition language="Spanish">es.wikipedia.org</edition>
+      </editions>
+    </project>
+    <project name="Wiktionary" launch="2002-12-12">
+      <editions>
+        <edition language="English">en.wiktionary.org</edition>
+        <edition language="French">fr.wiktionary.org</edition>
+        <edition language="Vietnamese">vi.wiktionary.org</edition>
+        <edition language="Turkish">tr.wiktionary.org</edition>
+        <edition language="Spanish">es.wiktionary.org</edition>
+      </editions>
+    </project>
+  </projects>
+</Wikimedia>
+```
+
+Select name attributes for all projects:
+
+```
+/Wikimedia/projects/project/@name
+```
+
+Select all editions of all projects
+
+```
+/Wikimedia//editions
+```
+
+Select addresses of all English Wikimedia projects (text of all edition elements where language attribute is equal to English):
+
+```
+/Wikimedia/projects/project/editions/edition[@language='English']/text()
+```

@@ -8,6 +8,8 @@
     * [SAX](#sax)
     * [DOM](#dom)
     * [StAX](#stax)
+    * [XSLT](#xslt)
+    
     
 # XML
 
@@ -302,7 +304,7 @@ XSLT accomplishes its work by using XSLT processors and stylesheets . An XSLT pr
 
 The beauty of XSLT is that you don’t need to develop custom software applications to perform the transformations. Instead, you simply create an XSLT stylesheet and input it along with the XML document needing to be transformed to an XSLT processor.
 
-![xslt](https://github.com/rgederin/data-formats/blob/master/img/xslt.jpg)
+![xslt](https://github.com/rgederin/data-formats/blob/master/img/xslt.png)
 
 Basic XML document
 
@@ -401,4 +403,6 @@ with the XML input file shown above results in the following XHTML (whitespace h
   </body>
 </html>
 ```
+
+Java implements XSLT through the types in the javax.xml.transform, javax.xml.transform.dom, javax.xml.transform.sax, javax.xml.transform.stax, and javax.xml.transform.stream packages. The javax.xml.transform package defines the generic APIs for processing transformation instructions and for performing a transformation from a source (where the XSLT processor’s input originates) to a result (where the processor’s output is sent). The remaining packages define the APIs for obtaining different kinds of sources and results.
 

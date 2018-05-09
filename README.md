@@ -293,3 +293,112 @@ Stream-based readers and writers are appropriate when writing code for memory-co
 An event-based reader extracts the next infoset item from an input stream by obtaining an event. Similarly, an event-based writer writes the next infoset item to the stream by adding an event to the output stream. In contrast to stream-based readers and writers, event-based readers and writers have no concept of a cursor.
 
 Event-based readers and writers are appropriate for creating XML processing pipelines (sequences of components that transform the previous component’s input and pass the transformed output to the next component in the sequence), for mo difying an event sequence, and more.
+
+## XSLT
+
+XSLT (Extensible Stylesheet Language Transformations) is a language for transforming XML documents into other XML documents, or other formats such as HTML for web pages, plain text or XSL Formatting Objects, which may subsequently be converted to other formats, such as PDF, PostScript and PNG
+
+XSLT accomplishes its work by using XSLT processors and stylesheets . An XSLT processor is a software component that applies an XSLT stylesheet (an XML-based template consisting of content and transformation instructions) to an input document (without modifying the document), and copies the transformed result to a result tree, which can be output to a file or output stream, or even piped into another XSLT processor for additional transformations. 
+
+The beauty of XSLT is that you don’t need to develop custom software applications to perform the transformations. Instead, you simply create an XSLT stylesheet and input it along with the XML document needing to be transformed to an XSLT processor.
+
+![xslt](https://github.com/rgederin/data-formats/blob/master/img/xslt.jpg)
+
+Basic XML document
+
+```
+<?xml version="1.0" ?>
+<persons>
+  <person username="JS1">
+    <name>John</name>
+    <family-name>Smith</family-name>
+  </person>
+  <person username="MI1">
+    <name>Morka</name>
+    <family-name>Ismincius</family-name>
+  </person>
+</persons>
+```
+
+This XSLT stylesheet provides templates to transform the XML document:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+  <xsl:output method="xml" indent="yes"/>
+
+  <xsl:template match="/persons">
+    <root>
+      <xsl:apply-templates select="person"/>
+    </root>
+  </xsl:template>
+
+  <xsl:template match="person">
+    <name username="{@username}">
+      <xsl:value-of select="name" />
+    </name>
+  </xsl:template>
+
+</xsl:stylesheet>
+```
+
+Its evaluation results in a new XML document, having another structure:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <name username="JS1">John</name>
+  <name username="MI1">Morka</name>
+</root>
+```
+
+Processing the following example XSLT file
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet
+  version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+
+  <xsl:template match="/persons">
+    <html>
+      <head> <title>Testing XML Example</title> </head>
+      <body>
+        <h1>Persons</h1>
+        <ul>
+          <xsl:apply-templates select="person">
+            <xsl:sort select="family-name" />
+          </xsl:apply-templates>
+        </ul>
+      </body>
+    </html>
+  </xsl:template>
+
+  <xsl:template match="person">
+    <li>
+      <xsl:value-of select="family-name"/><xsl:text>, </xsl:text><xsl:value-of select="name"/>
+    </li>
+  </xsl:template>
+
+</xsl:stylesheet>
+```
+
+with the XML input file shown above results in the following XHTML (whitespace has been adjusted here for clarity):
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head> <title>Testing XML Example</title> </head>
+  <body>
+    <h1>Persons</h1>
+      <ul>
+        <li>Ismincius, Morka</li>
+        <li>Smith, John</li>
+      </ul>
+  </body>
+</html>
+```
+

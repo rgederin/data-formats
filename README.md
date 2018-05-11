@@ -15,6 +15,7 @@
     * [Syntax](#syntax)
     * [JSON Schema](#json-schema)
     * [JSON vs XML](#json-vs-xml)
+- [YAML](#yaml)
     
     
 # XML
@@ -662,3 +663,11 @@ JSON is Unlike XML Because
 ![jvsx](https://github.com/rgederin/data-formats/blob/master/img/jvsx.jpg)
 
 ![jvsx](https://github.com/rgederin/data-formats/blob/master/img/json.png)
+
+# YAML
+
+YAML is a superset of JSON, and as such is a very convenient format for specifying hierarchical configuration data.
+
+YAML (YAML Ain't Markup Language) is a human-readable data serialization language. It is commonly used for configuration files, but could be used in many applications where data is being stored (e.g. debugging output) or transmitted (e.g. document headers). YAML targets many of the same communications applications as XML but has a minimal syntax which intentionally breaks compatibility with SGML. It uses both Python-style indentation to indicate nesting, and a more compact format that uses [] for lists and {} for maps making YAML 1.2 a superset of JSON.
+
+![yaml](https://github.com/rgederin/data-formats/blob/master/img/yaml.png)

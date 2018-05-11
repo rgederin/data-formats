@@ -16,6 +16,11 @@
     * [JSON Schema](#json-schema)
     * [JSON vs XML](#json-vs-xml)
 - [YAML](#yaml)
+- [Protobuf](#protobuf)
+    * [How it works](#how-it-works)
+    * [Protobuf vs XML](#protobuf-vs-xml)
+    * [proto3](#proto3)
+    * [Schema evolution](#schema-evolution)
     
     
 # XML
@@ -671,3 +676,107 @@ YAML is a superset of JSON, and as such is a very convenient format for specifyi
 YAML (YAML Ain't Markup Language) is a human-readable data serialization language. It is commonly used for configuration files, but could be used in many applications where data is being stored (e.g. debugging output) or transmitted (e.g. document headers). YAML targets many of the same communications applications as XML but has a minimal syntax which intentionally breaks compatibility with SGML. It uses both Python-style indentation to indicate nesting, and a more compact format that uses [] for lists and {} for maps making YAML 1.2 a superset of JSON.
 
 ![yaml](https://github.com/rgederin/data-formats/blob/master/img/yaml.png)
+
+# Protobuf
+
+Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that are compiled against the "old" format.
+
+The method involves an interface description language that describes the structure of some data and a program that generates source code from that description for generating or parsing a stream of bytes that represents the structured data.
+
+Protocol Buffers offers a concrete RPC protocol stack to use for defined services called gRPC.
+
+Canonically, messages are serialized into a binary wire format which is compact, forward- and backward-compatible, but not self-describing (that is, there is no way to tell the names, meaning, or full datatypes of fields without an external specification).
+
+## How it works
+
+You specify how you want the information you're serializing to be structured by defining protocol buffer message types in .proto files. Each protocol buffer message is a small logical record of information, containing a series of name-value pairs. Here's a very basic example of a .proto file that defines a message containing information about a person:
+
+```
+message Person {
+  required string name = 1;
+  required int32 id = 2;
+  optional string email = 3;
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  message PhoneNumber {
+    required string number = 1;
+    optional PhoneType type = 2 [default = HOME];
+  }
+
+  repeated PhoneNumber phone = 4;
+}
+```
+
+The message format is simple – each message type has one or more uniquely numbered fields, and each field has a name and a value type, where value types can be numbers (integer or floating-point), booleans, strings, raw bytes, or even (as in the example above) other protocol buffer message types, allowing you to structure your data hierarchically. You can specify optional fields, required fields, and repeated fields. 
+
+You can find more information about writing .proto files in the Protocol Buffer Language Guide.
+
+Once you've defined your messages, you run the protocol buffer compiler for your application's language on your .proto file to generate data access classes.
+
+You can then use this class in your application to populate, serialize, and retrieve Person protocol buffer messages.
+
+You can add new fields to your message formats without breaking backwards-compatibility; old binaries simply ignore the new field when parsing. So if you have a communications protocol that uses protocol buffers as its data format, you can extend your protocol without having to worry about breaking existing code.
+
+## Protobuf vs XML
+
+Protocol buffers have many advantages over XML for serializing structured data. Protocol buffers:
+
+* are simpler
+* are 3 to 10 times smaller
+* are 20 to 100 times faster
+* are less ambiguous
+* generate data access classes that are easier to use programmatically
+
+However, protocol buffers are not always a better solution than XML – for instance, protocol buffers would not be a good way to model a text-based document with markup (e.g. HTML), since you cannot easily interleave structure with text. In addition, XML is human-readable and human-editable; protocol buffers, at least in their native format, are not. XML is also – to some extent – self-describing. A protocol buffer is only meaningful if you have the message definition (the .proto file).
+
+## proto3
+
+The most recent version 3 release introduces a new language version - Protocol Buffers language version 3 (aka proto3), as well as some new features in our existing language version (aka proto2). Proto3 simplifies the protocol buffer language, both for ease of use and to make it available in a wider range of programming languages: our current release lets you generate protocol buffer code in Java, C++, Python, Java Lite, Ruby, JavaScript, Objective-C, and C#. In addition you can generate proto3 code for Go using the latest Go protoc plugin, available from the golang/protobuf Github repository. More languages are in the pipeline.
+    
+Note that the two language version APIs are not completely compatible. To avoid inconvenience to existing users, we will continue to support the previous language version in new protocol buffers releases.
+
+## Schema evolution
+    
+For understanding schema evolution we need to review how protobuf encode data into bytes. 
+
+The example I will use is a little object describing a person. In JSON I would write it like this:
+
+```
+{
+    "userName": "Martin",
+    "favouriteNumber": 1337,
+    "interests": ["daydreaming", "hacking"]
+}
+```
+If I remove all the whitespace it consumes 82 bytes.
+
+The Protocol Buffers schema for the person object might look something like this:
+
+message Person {
+    required string user_name        = 1;
+    optional int64  favourite_number = 2;
+    repeated string interests        = 3;
+}
+
+When we encode the data above using this schema, it uses 33 bytes, as follows:
+
+![proto](https://github.com/rgederin/data-formats/blob/master/img/protobuf.png)
+
+Look exactly at how the binary representation is structured, byte by byte. The person record is just the concatentation of its fields. Each field starts with a byte that indicates its tag number (the numbers 1, 2, 3 in the schema above), and the type of the field. If the first byte of a field indicates that the field is a string, it is followed by the number of bytes in the string, and then the UTF-8 encoding of the string. If the first byte indicates that the field is an integer, a variable-length encoding of the number follows. There is no array type, but a tag number can appear multiple times to represent a multi-valued field.
+
+This encoding has consequences for schema evolution:
+
+* There is no difference in the encoding between optional, required and repeated fields (except for the number of times the tag number can appear). This means that you can change a field from optional to repeated and vice versa (if the parser is expecting an optional field but sees the same tag number multiple times in one record, it discards all but the last value). required has an additional validation check, so if you change it, you risk runtime errors (if the sender of a message thinks that it’s optional, but the recipient thinks that it’s required).
+
+* An optional field without a value, or a repeated field with zero values, does not appear in the encoded data at all — the field with that tag number is simply absent. Thus, it is safe to remove that kind of field from the schema. However, you must never reuse the tag number for another field in future, because you may still have data stored that uses that tag for the field you deleted.
+
+* You can add a field to your record, as long as it is given a new tag number. If the Protobuf parser parser sees a tag number that is not defined in its version of the schema, it has no way of knowing what that field is called. But it does roughly know what type it is, because a 3-bit type code is included in the first byte of the field. This means that even though the parser can’t exactly interpret the field, it can figure out how many bytes it needs to skip in order to find the next field in the record.
+
+* You can rename fields, because field names don’t exist in the binary serialization, but you can never change a tag number.
+
+

@@ -31,6 +31,7 @@
     * [Schemas](#schemas)
     * [Schema evolution](#schema-evolution)
     * [Comparison with other systems](#comparison-with-other-systems)
+- [Parquet](#parquet) 
    
 # XML
 

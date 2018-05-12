@@ -25,6 +25,7 @@
 - [Thrift](#thrift)
     * [Architecture](#architecture)
     * [Schema evolution](#schema-evolution)
+    * [Thrift vs Protobuf](#thrift-vs-protobuf)
     
     
 # XML
@@ -873,7 +874,25 @@ The typical model of Thrift/Protobuf use is
 * Multiple structs/messages can be defined and referred to within the same .thrift/.proto file
 * We should not change tagging integer - it will breaks compatibility
 
+**Similar versioning approach**
+
+* The system must be able to support reading of old data, as well as requests from out-of-date clients to new servers, and vice versa.
+* Versioning in Thrift and Protobuf is implemented via field identifiers.
+* The combination of this field identifiers and its type specifier is used to uniquely identify the field.
+* A new compiling isn't necessary.
+* Statically typed systems like CORBA or RMI would require an update of all clients in this case
+
 **Overal comparison**
 
 ![pbthriftidl](https://github.com/rgederin/data-formats/blob/master/img/pvst1.png)
+
 ![pbthriftidl](https://github.com/rgederin/data-formats/blob/master/img/pvst2.png)
+
+![pbthriftidl](https://github.com/rgederin/data-formats/blob/master/img/pvst3.png)
+
+**Pros/Cons**
+
+![pbthriftidl](https://github.com/rgederin/data-formats/blob/master/img/pvst4.png)
+
+
+

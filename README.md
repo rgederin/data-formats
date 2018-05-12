@@ -26,6 +26,7 @@
     * [Architecture](#architecture)
     * [Schema evolution](#schema-evolution)
     * [Thrift vs Protobuf](#thrift-vs-protobuf)
+- [ASN.1](#asn.1)
     
     
 # XML
@@ -893,6 +894,18 @@ The typical model of Thrift/Protobuf use is
 **Pros/Cons**
 
 ![pbthriftidl](https://github.com/rgederin/data-formats/blob/master/img/pvst4.png)
+
+# ASN.1
+
+Abstract Syntax Notation One (ASN.1) is an interface description language for defining data structures that can be serialized and deserialized in a standard, cross-platform way. It is broadly used in telecommunications and computer networking, and especially in cryptography.
+
+Protocol developers define data structures in ASN.1 modules, which are generally a section of a broader standards document written in the ASN.1 language. Because the language is both human-readable and machine-readable, modules can be automatically turned into libraries that process their data structures, using an ASN.1 compiler.
+
+ASN.1 is similar in purpose and use to protocol buffers and Apache Thrift, which are also interface description languages for cross-platform data serialization. Like those languages, it has a schema (in ASN.1, called a "module"), and a set of encodings, typically type-length-value encodings. However, ASN.1, defined in 1984, predates them by many years. It also includes a wider variety of basic data types, some of which are obsolete, and has more options for extensibility. A single ASN.1 message can include data from multiple modules defined in multiple standards, even standards defined years apart.
+
+ASN.1 is used in X.509, which defines the format of certificates used in the HTTPS protocol for securely browsing the web, and in many other cryptographic systems.
+
+It's also used in the PKCS group of cryptography standards, X.400 electronic mail, X.500 and Lightweight Directory Access Protocol (LDAP), H.323 (VoIP), Kerberos, BACnet and simple network management protocol (SNMP), and third- and fourth-generation wireless communications technologies (UMTS, LTE, and WiMAX 2).
 
 
 

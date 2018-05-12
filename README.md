@@ -845,3 +845,35 @@ The BinaryProtocol encoding is very straightforward, but also fairly wasteful (i
 The CompactProtocol encoding is semantically equivalent, but uses variable-length integers and bit packing to reduce the size to 34 bytes:
 
 ![compactprotocol](https://github.com/rgederin/data-formats/blob/master/img/compactprotocol.png)
+
+As you can see, Thrift’s approach to schema evolution is the same as Protobuf’s: each field is manually assigned a tag in the IDL, and the tags and field types are stored in the binary encoding, which enables the parser to skip unknown fields. Thrift defines an explicit list type rather than Protobuf’s repeated field approach, but otherwise the two are very similar.
+
+## Thrift vs Protobuf
+
+**Same Typical Operation Model**
+
+The typical model of Thrift/Protobuf use is
+
+* Write down a bunch of struct-like message formats in an IDL-like language.
+* Run a tool to generate Java/C++/whatever boilerplate code. Example: thrift --gen java MyProject.thrift
+* Outputs thousands of lines - but they remain fairly readable in most languages
+* Link against this boilerplate when you build your application.
+* DO NOT EDIT!
+
+**Similar IDLs**
+
+![pbthriftidl](https://github.com/rgederin/data-formats/blob/master/img/pbthriftidl.png)
+
+**Similar IDL rules**
+
+* Every field must have a unique, positive integer identifier ("= 1"," = 2" or " 1:", " 2:" )
+* Fields may be marked as ’required’ or ’optional’
+* structs/messages may contain other structs/messages
+* You may specify an optional "default" value for a field
+* Multiple structs/messages can be defined and referred to within the same .thrift/.proto file
+* We should not change tagging integer - it will breaks compatibility
+
+**Overal comparison**
+
+![pbthriftidl](https://github.com/rgederin/data-formats/blob/master/img/pvst1.png)
+![pbthriftidl](https://github.com/rgederin/data-formats/blob/master/img/pvst2.png)

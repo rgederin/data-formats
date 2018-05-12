@@ -818,4 +818,4 @@ Thrift also provides a number of servers, which are
 * TSimpleServer – A single-threaded server using standard blocking I/O. Useful for testing.
 * TThreadPoolServer – A multi-threaded server using standard blocking I/O.
 
-![thrift(https://github.com/rgederin/data-formats/blob/master/img/thrift.png)
+![thrift](https://github.com/rgederin/data-formats/blob/master/img/thrift.png)

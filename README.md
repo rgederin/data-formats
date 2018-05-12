@@ -26,9 +26,11 @@
     * [Architecture](#architecture)
     * [Schema evolution](#schema-evolution)
     * [Thrift vs Protobuf](#thrift-vs-protobuf)
-- [ASN.1](#asn.1)
-    
-    
+- [ASN.1](#asn1)
+- [Avro](#avro)
+    * [Schemas](#schemas)
+    * [Schema evolution](#schema-evolution)
+   
 # XML
 
 In computing, Extensible Markup Language (XML) is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable. 
@@ -907,5 +909,114 @@ ASN.1 is used in X.509, which defines the format of certificates used in the HTT
 
 It's also used in the PKCS group of cryptography standards, X.400 electronic mail, X.500 and Lightweight Directory Access Protocol (LDAP), H.323 (VoIP), Kerberos, BACnet and simple network management protocol (SNMP), and third- and fourth-generation wireless communications technologies (UMTS, LTE, and WiMAX 2).
 
+# Avro
 
+Avro is a remote procedure call and data serialization framework developed within Apache's Hadoop project. It uses JSON for defining data types and protocols, and serializes data in a compact binary format. Its primary use is in Apache Hadoop, where it can provide both a serialization format for persistent data, and a wire format for communication between Hadoop nodes, and from client programs to the Hadoop services.
 
+It is similar to Thrift and Protocol Buffers, but does not require running a code-generation program when a schema changes (unless desired for statically-typed languages).
+
+Avro provides:
+
+* Rich data structures.
+* A compact, fast, binary data format.
+* A container file, to store persistent data.
+* Remote procedure call (RPC).
+* Simple integration with dynamic languages. Code generation is not required to read or write data files nor to use or implement RPC protocols. Code generation as an optional optimization, only worth implementing for statically typed languages.
+
+Full specification availabel on [official web site](https://avro.apache.org/docs/current/spec.html)
+
+## Schemas
+
+Avro relies on schemas. When Avro data is read, the schema used when writing it is always present. This permits each datum to be written with no per-value overheads, making serialization both fast and small. This also facilitates use with dynamic, scripting languages, since data, together with its schema, is fully self-describing.
+
+When Avro data is stored in a file, its schema is stored with it, so that files may be processed later by any program. If the program reading the data expects a different schema this can be easily resolved, since both schemas are present.
+
+When Avro is used in RPC, the client and server exchange schemas in the connection handshake. (This can be optimized so that, for most calls, no schemas are actually transmitted.) Since both client and server both have the other's full schema, correspondence between same named fields, missing fields, extra fields, etc. can all be easily resolved.
+
+Avro schemas are defined with JSON . This facilitates implementation in languages that already have JSON libraries.
+
+Schema example
+
+```
+ {
+   "namespace": "example.avro",
+   "type": "record",
+   "name": "User",
+   "fields": [
+      {"name": "name", "type": "string"},
+      {"name": "favorite_number",  "type": ["int", "null"]},
+      {"name": "favorite_color", "type": ["string", "null"]}
+   ] 
+ }
+```
+
+**Avro IDL**
+
+In addition to supporting JSON for type and protocol definitions, Avro includes experimental support for an alternative interface description language (IDL) syntax known as Avro IDL. Previously known as GenAvro, this format is designed to ease adoption by users familiar with more traditional IDLs and programming languages, with a syntax similar to C/C++, Protocol Buffers and others.
+
+## Schema evolution
+
+Avro schemas can be written in two ways, either in a JSON format:
+```
+{
+    "type": "record",
+    "name": "Person",
+    "fields": [
+        {"name": "userName",        "type": "string"},
+        {"name": "favouriteNumber", "type": ["null", "long"]},
+        {"name": "interests",       "type": {"type": "array", "items": "string"}}
+    ]
+}
+```
+…or in an IDL:
+
+```
+record Person {
+    string               userName;
+    union { null, long } favouriteNumber;
+    array<string>        interests;
+}
+```
+
+Notice that there are no tag numbers in the schema! 
+
+Here is the same example data encoded in just 32 bytes:
+
+![avro](https://github.com/rgederin/data-formats/blob/master/img/avro.png)
+
+Strings are just a length prefix followed by UTF-8 bytes, but there’s nothing in the bytestream that tells you that it is a string. It could just as well be a variable-length integer, or something else entirely. The only way you can parse this binary data is by reading it alongside the schema, and the schema tells you what type to expect next. You need to have the exact same version of the schema as the writer of the data used. If you have the wrong schema, the parser will not be able to make head or tail of the binary data.
+
+So how does Avro support schema evolution? Well, although you need to know the exact schema with which the data was written (the writer’s schema), that doesn’t have to be the same as the schema the consumer is expecting (the reader’s schema). You can actually give two different schemas to the Avro parser, and it uses resolution rules to translate data from the writer schema into the reader schema.
+
+This has some interesting consequences for schema evolution:
+
+* The Avro encoding doesn’t have an indicator to say which field is next; it just encodes one field after another, in the order they appear in the schema. Since there is no way for the parser to know that a field has been skipped, there is no such thing as an optional field in Avro. Instead, if you want to be able to leave out a value, you can use a union type, like union { null, long } above. This is encoded as a byte to tell the parser which of the possible union types to use, followed by the value itself. By making a union with the null type (which is simply encoded as zero bytes) you can make a field optional.
+* Union types are powerful, but you must take care when changing them. If you want to add a type to a union, you first need to update all readers with the new schema, so that they know what to expect. Only once all readers are updated, the writers may start putting this new type in the records they generate.
+* You can reorder fields in a record however you like. Although the fields are encoded in the order they are declared, the parser matches fields in the reader and writer schema by name, which is why no tag numbers are needed in Avro.
+* Because fields are matched by name, changing the name of a field is tricky. You need to first update all readers of the data to use the new field name, while keeping the old name as an alias (since the name matching uses aliases from the reader’s schema). Then you can update the writer’s schema to use the new field name.
+* You can add a field to a record, provided that you also give it a default value (e.g. null if the field’s type is a union with null). The default is necessary so that when a reader using the new schema parses a record written with the old schema (and hence lacking the field), it can fill in the default instead.
+* Conversely, you can remove a field from a record, provided that it previously had a default value. (This is a good reason to give all your fields default values if possible.) This is so that when a reader using the old schema parses a record written with the new schema, it can fall back to the default.
+
+This leaves us with the problem of knowing the exact schema with which a given record was written. The best solution depends on the context in which your data is being used:
+
+* In Hadoop you typically have large files containing millions of records, all encoded with the same schema. Object container files handle this case: they just include the schema once at the beginning of the file, and the rest of the file can be decoded with that schema.
+* In an RPC context, it’s probably too much overhead to send the schema with every request and response. But if your RPC framework uses long-lived connections, it can negotiate the schema once at the start of the connection, and amortize that overhead over many requests.
+* If you’re storing records in a database one-by-one, you may end up with different schema versions written at different times, and so you have to annotate each record with its schema version. If storing the schema itself is too much overhead, you can use a hash of the schema, or a sequential schema version number. You then need a schema registry where you can look up the exact schema definition for a given version number.
+
+One way of looking at it: in Protocol Buffers, every field in a record is tagged, whereas in Avro, the entire record, file or network connection is tagged with a schema version.
+
+At first glance it may seem that Avro’s approach suffers from greater complexity, because you need to go to the additional effort of distributing schemas. However, I am beginning to think that Avro’s approach also has some distinct advantages:
+
+* Object container files are wonderfully self-describing: the writer schema embedded in the file contains all the field names and types, and even documentation strings (if the author of the schema bothered to write some). This means you can load these files directly into interactive tools like Pig, and it Just Works™ without any configuration.
+* As Avro schemas are JSON, you can add your own metadata to them, e.g. describing application-level semantics for a field. And as you distribute schemas, that metadata automatically gets distributed too.
+* A schema registry is probably a good thing in any case, serving as documentation and helping you to find and reuse data. And because you simply can’t parse Avro data without the schema, the schema registry is guaranteed to be up-to-date. Of course you can set up a protobuf schema registry too, but since it’s not required for operation, it’ll end up being on a best-effort basis.
+
+## Comparison with other systems
+
+Avro provides functionality similar to systems such as Thrift, Protocol Buffers, etc. Avro differs from these systems in the following fundamental aspects.
+
+* **Dynamic typing**: Avro does not require that code be generated. Data is always accompanied by a schema that permits full processing of that data without code generation, static datatypes, etc. This facilitates construction of generic data-processing systems and languages.
+
+* **Untagged data**: Since the schema is present when data is read, considerably less type information need be encoded with data, resulting in smaller serialization size.
+
+* **No manually-assigned field IDs**: When a schema changes, both the old and new schema are always present when processing data, so differences may be resolved symbolically, using field names.

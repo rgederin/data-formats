@@ -30,6 +30,7 @@
 - [Avro](#avro)
     * [Schemas](#schemas)
     * [Schema evolution](#schema-evolution)
+    * [Comparison with other systems](#comparison-with-other-systems)
    
 # XML
 

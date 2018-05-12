@@ -23,6 +23,8 @@
     * [proto3](#proto3)
     * [Schema evolution](#schema-evolution)
 - [Thrift](#thrift)
+    * [Architecture](#architecture)
+    * [Schema evolution](#schema-evolution)
     
     
 # XML
@@ -819,3 +821,27 @@ Thrift also provides a number of servers, which are
 * TThreadPoolServer – A multi-threaded server using standard blocking I/O.
 
 ![thrift](https://github.com/rgederin/data-formats/blob/master/img/thrift.png)
+
+## Schema evolution
+
+Thrift is a much bigger project than Avro or Protocol Buffers, as it’s not just a data serialization library, but also an entire RPC framework. It also has a somewhat different culture: whereas Avro and Protobuf standardize a single binary encoding, Thrift embraces a whole variety of different serialization formats (which it calls “protocols”).
+
+Indeed, Thrift has two different JSON encodings, and no fewer than three different binary encodings. (However, one of the binary encodings, DenseProtocol, is only supported in the C++ implementation; since we’re interested in cross-language serialization, I will focus on the other two.)
+
+All the encodings share the same schema definition, in Thrift IDL:
+
+```
+struct Person {
+  1: string       userName,
+  2: optional i64 favouriteNumber,
+  3: list<string> interests
+}
+```
+
+The BinaryProtocol encoding is very straightforward, but also fairly wasteful (it takes 59 bytes to encode our example record):
+
+![binaryprotocol](https://github.com/rgederin/data-formats/blob/master/img/binaryprotocol.png)
+
+The CompactProtocol encoding is semantically equivalent, but uses variable-length integers and bit packing to reduce the size to 34 bytes:
+
+![compactprotocol](https://github.com/rgederin/data-formats/blob/master/img/compactprotocol.png)

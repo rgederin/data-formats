@@ -1021,3 +1021,22 @@ Avro provides functionality similar to systems such as Thrift, Protocol Buffers,
 * **Untagged data**: Since the schema is present when data is read, considerably less type information need be encoded with data, resulting in smaller serialization size.
 
 * **No manually-assigned field IDs**: When a schema changes, both the old and new schema are always present when processing data, so differences may be resolved symbolically, using field names.
+
+## Parquet
+
+Apache Parquet is a free and open-source column-oriented data store of the Apache Hadoop ecosystem. It is similar to the other columnar storage file formats available in Hadoop namely RCFile and Optimized RCFile. It is compatible with most of the data processing frameworks in the Hadoop environment. It provides efficient data compression and encoding schemes with enhanced performance to handle complex data in bulk.
+
+The open-source project to build Apache Parquet began as a joint effort between Twitter and Cloudera. The first version—Apache Parquet 1.0—was released in July 2013. Since April 27, 2015, Apache Parquet is a top-level Apache Software Foundation (ASF)-sponsored project
+
+Apache Parquet is implemented using the record-shredding and assembly algorithm, which accommodates the complex data structures that can be used to store the data. The values in each column are physically stored in contiguous memory locations and this columnar storage provides the following benefits:
+
+* Column-wise compression is efficient and saves storage space
+* Compression techniques specific to a type can be applied as the column values tend to be of the same type
+* Queries that fetch specific column values need not read the entire row data thus improving performance
+* Different encoding techniques can be applied to different columns
+
+![p1](https://github.com/rgederin/data-formats/blob/master/img/p1.png)
+
+![p2](https://github.com/rgederin/data-formats/blob/master/img/p2.png)
+
+![p3](https://github.com/rgederin/data-formats/blob/master/img/p3.png)

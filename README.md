@@ -16,11 +16,13 @@
     * [JSON Schema](#json-schema)
     * [JSON vs XML](#json-vs-xml)
 - [YAML](#yaml)
+- [IDL](#idl)
 - [Protobuf](#protobuf)
     * [How it works](#how-it-works)
     * [Protobuf vs XML](#protobuf-vs-xml)
     * [proto3](#proto3)
     * [Schema evolution](#schema-evolution)
+- [Thrift](#thrift)
     
     
 # XML
@@ -677,6 +679,12 @@ YAML (YAML Ain't Markup Language) is a human-readable data serialization languag
 
 ![yaml](https://github.com/rgederin/data-formats/blob/master/img/yaml.png)
 
+# IDL
+
+An interface description language or interface definition language (IDL), is a specification language used to describe a software component's application programming interface (API). IDLs describe an interface in a language-independent way, enabling communication between software components that do not share one language. For example, between those written in C++ and those written in Java.
+
+IDLs are commonly used in remote procedure call software. In these cases the machines at either end of the link may be using different operating systems and computer languages. IDLs offer a bridge between the two different systems.
+
 # Protobuf
 
 Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that are compiled against the "old" format.
@@ -779,4 +787,35 @@ This encoding has consequences for schema evolution:
 
 * You can rename fields, because field names don’t exist in the binary serialization, but you can never change a tag number.
 
+# Thrift
 
+Thrift is an interface definition language and binary communication protocol used for defining and creating services for numerous languages. It forms a remote procedure call (RPC) framework and was developed at Facebook for "scalable cross-language services development". It combines a software stack with a code generation engine to build cross-platform services which can connect applications written in a variety of languages and frameworks, including ActionScript, C, C++, C#, Cappuccino, Cocoa, Delphi, Erlang, Go, Haskell, Java, Node.js, Objective-C, OCaml, Perl, PHP, Python, Ruby and Smalltalk.Although developed at Facebook, it is now an open source project in the Apache Software Foundation. The implementation was described in an April 2007 technical paper released by Facebook, now hosted on Apache.
+
+## Architecture
+
+Thrift includes a complete stack for creating clients and servers. The top part is generated code from the Thrift definition. From this file, the services generate client and processor code. In contrast to built-in types, created data structures are sent as result in generated code. The protocol and transport layer are part of the runtime library. With Thrift, it is possible to define a service and change the protocol and transport without recompiling the code. Besides the client part, Thrift includes server infrastructure to tie protocols and transports together, like blocking, non-blocking, and multi-threaded servers. The underlying I/O part of the stack is implemented differently for different languages.
+
+Thrift supports a number of protocols:
+
+* TBinaryProtocol – A straightforward binary format, simple, but not optimized for space efficiency. Faster to process than the text protocol but more difficult to debug.
+* TCompactProtocol – More compact binary format; typically more efficient to process as well
+* TDebugProtocol – A human-readable text format to aid in debugging.
+* TDenseProtocol – Similar to TCompactProtocol, stripping off the meta information from what is transmitted.
+* TJSONProtocol – Uses JSON for encoding of data.
+* TSimpleJSONProtocol – A write-only protocol that cannot be parsed by Thrift because it drops metadata using JSON. Suitable for parsing by scripting languages.[9]
+
+The supported transports are:
+
+* TFileTransport – This transport writes to a file.
+* TFramedTransport – This transport is required when using a non-blocking server. It sends data in frames, where each frame is preceded by length information.
+* TMemoryTransport – Uses memory for I/O. The Java implementation uses a simple ByteArrayOutputStream internally.
+* TSocket – Uses blocking socket I/O for transport.
+* TZlibTransport – Performs compression using zlib. Used in conjunction with another transport.
+
+Thrift also provides a number of servers, which are
+
+* TNonblockingServer – A multi-threaded server using non-blocking I/O (Java implementation uses NIO channels). TFramedTransport must be used with this server.
+* TSimpleServer – A single-threaded server using standard blocking I/O. Useful for testing.
+* TThreadPoolServer – A multi-threaded server using standard blocking I/O.
+
+![thrift(https://github.com/rgederin/data-formats/blob/master/img/thrift.png)
